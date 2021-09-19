@@ -399,13 +399,13 @@ const char *comandos_at[] = {
     		lptmr0_ticks=0;
     		 estado1 = leerBoton1();
     		 estado2 = leerBoton2();
-    		 if (estado1!=false){
+    		 if (estado1!=true){
 
     			 printf("boton1\r\n");
     			  printf("\r\n");
     		 }
 
-    		 if (estado2!=false){
+    		 if (estado2!=true){
 
     			 printf("boton2\r\n");
     			  printf("\r\n");
