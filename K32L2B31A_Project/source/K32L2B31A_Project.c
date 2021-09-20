@@ -219,7 +219,7 @@ const char *comandos_at[] = {
 
     		    	if (uart0CuantosDatosHayEnBuffer() !=0) {
     		    	    		nuevo_byte_lpuart0 = LeerByteDesdeBuffer();
-
+                                printf("nuevo byte:%c\r\n",nuevo_byte_lpuart0);
     		    	    					//almacena dato en buffer rx
     		    	    					buffer_rx[index_buffer_rx] = nuevo_byte_lpuart0;
     		    	    					//incrementa apuntador de datos en buffer

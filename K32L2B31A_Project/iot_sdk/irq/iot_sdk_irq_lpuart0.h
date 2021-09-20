@@ -13,10 +13,14 @@
 
 
 
+/*! @brief Ring buffer size (Unit: Byte). */
+#define DEMO_RING_BUFFER_SIZE 100
+
+
 void PushByteDesdeBuffer(uint8_t nuevo_byte);
 uint8_t LeerByteDesdeBuffer();
 
-uint16_t uart0CuantosDatosHayEnBuffer(void);
+int32_t uart0CuantosDatosHayEnBuffer(void);
 
 
 #endif /* IRQ_IOT_SDK_IRQ_LPUART0_H_ */

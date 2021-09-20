@@ -6,6 +6,7 @@
  */
 
 #include "iot_sdk_irq_lpuart0.h"
+
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "board.h"
@@ -14,16 +15,7 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define DEMO_LPUART            LPUART0
-#define DEMO_LPUART_CLKSRC     BOARD_DEBUG_UART_CLKSRC
-#define DEMO_LPUART_CLK_FREQ   CLOCK_GetFreq(BOARD_DEBUG_UART_CLKSRC)
-#define DEMO_LPUART_IRQn       LPUART0_IRQn
-#define DEMO_LPUART_IRQHandler LPUART0_IRQHandler
 
-/*! @brief Ring buffer size (Unit: Byte). */
-#define DEMO_RING_BUFFER_SIZE 16
-
-/*! @brief Ring buffer to save received data. */
 
 /*******************************************************************************
  * Prototypes
@@ -44,10 +36,10 @@ uint8_t g_tipString[] =
   Ring buffer empty: (rxIndex == txIndex)
 */
 volatile uint8_t demoRingBuffer[DEMO_RING_BUFFER_SIZE];
-volatile uint16_t txIndex; /* Index of the data to send out. */
-volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
-volatile uint32_t tmprxIndex = 0;
-volatile uint32_t tmptxIndex = 0;
+//volatile uint16_t txIndex; /* Index of the data to send out. */
+//volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
+volatile uint32_t rxIndex_productor = 0;
+volatile uint32_t rx_index_consumidor = 0;
 
 /*******************************************************************************
  * Code
@@ -76,11 +68,11 @@ void DEMO_LPUART_IRQHandler(void)
 
 void PushByteDesdeBuffer(uint8_t nuevo_byte){
 
-if (((tmprxIndex + 1) % DEMO_RING_BUFFER_SIZE) != tmptxIndex)
+if (((rxIndex_productor + 1) % DEMO_RING_BUFFER_SIZE) != rx_index_consumidor)
         {
-            demoRingBuffer[rxIndex] = nuevo_byte;
-            rxIndex++;
-            rxIndex %= DEMO_RING_BUFFER_SIZE;
+            demoRingBuffer[rxIndex_productor] = nuevo_byte;
+            rxIndex_productor++;
+            rxIndex_productor %= DEMO_RING_BUFFER_SIZE;
         }
   }
 
@@ -88,11 +80,11 @@ if (((tmprxIndex + 1) % DEMO_RING_BUFFER_SIZE) != tmptxIndex)
 uint8_t LeerByteDesdeBuffer(){
 
 	uint8_t byte_a_retornar;
-	            if (tmprxIndex != tmptxIndex)
+	            if (rxIndex_productor != rx_index_consumidor)
 	            {
-	               byte_a_retornar=demoRingBuffer[tmptxIndex];
-	                txIndex++;
-	                txIndex %= DEMO_RING_BUFFER_SIZE;
+	               byte_a_retornar=demoRingBuffer[rx_index_consumidor];
+	               rx_index_consumidor++;
+	               rx_index_consumidor %= DEMO_RING_BUFFER_SIZE;
 	            }
 
 	            return(byte_a_retornar);
@@ -102,6 +94,6 @@ uint8_t LeerByteDesdeBuffer(){
 
 
 
-uint16_t uart0CuantosDatosHayEnBuffer(void) {
-	return ((uint16_t) (rxIndex - txIndex));
+int32_t uart0CuantosDatosHayEnBuffer(void) {
+	return ((int32_t) (rxIndex_productor - rx_index_consumidor));
 }
