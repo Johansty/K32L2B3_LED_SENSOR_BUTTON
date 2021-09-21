@@ -54,15 +54,15 @@ enum lista_comandos_LEDS {
 	kSENSOR_TEMP,
 };
 
-#define COMANDOS_DISPONIBLES_LEDS 2
-#define COMANDOS_DISPONIBLES_AT 9
+#define COMANDOS_DISPONIBLES_LEDS_SENSOR 6
+#define COMANDOS_DISPONIBLES_AT 10
 #define BYTES_EN_BUFFER	100
 
 
 /*******************************************************************************
  * Private Prototypes
  ******************************************************************************/
-
+void esperando_respuesta(void);
 /*******************************************************************************
  * External vars
  ******************************************************************************/
@@ -88,7 +88,7 @@ const char *comandos_at[] = {
     		        "OK",		//AT
     				"EC25",		//ATI
     				"READY",	//AT+CPIN?
-    				"\"LTE\"",
+    				"LTE",
     				"0,1",		//AT+CREG? = GSM,REGISTERED
     				"0,1",
     				"0,1",
@@ -136,6 +136,8 @@ const char *comandos_at[] = {
 	bool estado1;
 	bool estado2;
 	int j=0;
+	int i=0;
+	//int k=0;
 	uint8_t nuevo_byte_lpuart0;
 
 
@@ -154,66 +156,74 @@ const char *comandos_at[] = {
 
     while(1) {
 
-
+    	//for(int j=0; j<COMANDOS_DISPONIBLES_AT; j++){
     		switch(j){
 
     		    case kAT:
     		    	printf("%s\r\n",comandos_at[kAT]);
-    		    	j=kesperando_respuesta;
+    		    	i=kAT;
+    		    	j= kesperando_respuesta;
 
     		    break;
 
     		    case kATI:
     		        printf("%s\r\n",comandos_at[kATI]);
-    		        j=kesperando_respuesta;
+    		        i=kATI;
+    		        j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_CPIN:
     		        printf("%s\r\n",comandos_at[kAT_CPIN]);
-    		        j=kesperando_respuesta;
+    		        i=kAT_CPIN;
+    		        j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_QCSQ:
     		         printf("%s\r\n",comandos_at[kAT_QCSQ]);
-    		         j=kesperando_respuesta;
-
+    		         i=kAT_QCSQ;
+    		         j= kesperando_respuesta;
     		    break;
 
     		    case kAT_CREG:
     		         printf("%s\r\n",comandos_at[kAT_CREG]);
-    		         j=kesperando_respuesta;
+    		         i=kAT_CREG;
+    		         j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_CGREG:
     		         printf("%s\r\n",comandos_at[kAT_CGREG]);
-    		         j=kesperando_respuesta;
+    		         i=kAT_CGREG;
+    		         j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_CEREG:
     		         printf("%s\r\n",comandos_at[kAT_CEREG]);
-    		         j=kesperando_respuesta;
+    		         i=kAT_CEREG;
+    		         j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_CFUN_0:
     		         printf("%s\r\n",comandos_at[kAT_CFUN_0]);
-    		         j=kesperando_respuesta;
-
+    		         i=kAT_CFUN_0;
+    		         j= kesperando_respuesta;
     		    break;
 
     		    case kAT_CFUN_1:
     		         printf("%s\r\n",comandos_at[kAT_CFUN_1]);
-    		         j=kesperando_respuesta;
+    		         i=kAT_CFUN_1;
+    		         j= kesperando_respuesta;
 
     		    break;
 
     		    case kAT_CSQ:
     		         printf("%s\r\n",comandos_at[kAT_CSQ]);
-    		         j=kesperando_respuesta;
+    		         i=kAT_CSQ;
+    		         j= kesperando_respuesta;
 
     		    break;
 
@@ -221,7 +231,7 @@ const char *comandos_at[] = {
 
     		    	if (uart0CuantosDatosHayEnBuffer() !=0) {
     		    	    		nuevo_byte_lpuart0 = LeerByteDesdeBuffer();
-                                printf("nuevo byte:%c\r\n",nuevo_byte_lpuart0);
+                                //printf("nuevo byte:%c\r\n",nuevo_byte_lpuart0);
     		    	    					//almacena dato en buffer rx
     		    	    					buffer_rx[index_buffer_rx] = nuevo_byte_lpuart0;
     		    	    					//incrementa apuntador de datos en buffer
@@ -233,10 +243,10 @@ const char *comandos_at[] = {
 
     		    	    					if(nuevo_byte_lpuart0 == '\n'){
 
-    		    	    						for(int i=0; i<COMANDOS_DISPONIBLES_AT; i++){
+    		    	    						if(i<COMANDOS_DISPONIBLES_AT){
 
     		    	    						puntero_ok = (char*) (strstr((char*) (&buffer_rx[0]),(char*) (repuestas_at[i])));
-    		    	    						puntero_ok2 = (char*) (strstr((char*) (&buffer_rx[0]),(char*) (repuestas_LEDS[i])));
+
 
     		    	    						   if(puntero_ok!=0){
     		    	    						    	switch(i){
@@ -244,64 +254,67 @@ const char *comandos_at[] = {
 
     		    	    								   case kAT:
 
-    		    	    									   printf("RESPUESTA ENCONTRADA\r\n");
 
+    		    	    									   printf("RESPUESTA ENCONTRADA\r\n");
+    		    	    									   BorrarBufferRX();
     		    	    									   j=kATI;
+
 
     		    	    						    	   break;
 
     		    	    								   case kATI:
 
-    		    	    								        printf("RESPUESTA ENCONTRADA\r\n");
 
-    		    	    								        j=kAT_CPIN;
+    		    	    								        printf("RESPUESTA ENCONTRADA\r\n");
+    		    	    								        BorrarBufferRX();
+    		    	    								       j=kAT_CPIN;
 
     		    	    								   break;
 
     		    	    								   case kAT_CPIN:
 
     		    	    								        printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								        j=kAT_QCSQ;
+    		    	    								        BorrarBufferRX();
+    		    	    								       j=kAT_QCSQ;
 
     		    	    								   break;
 
     		    	    								   case kAT_QCSQ:
 
     		    	    								         printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								       	j=kAT_CREG;
+    		    	    								         BorrarBufferRX();
+    		    	    								       j=kAT_CREG;
 
     		    	    								   break;
 
     		    	    								   case kAT_CREG:
 
     		    	    								         printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								         j=kAT_CGREG;
+    		    	    								         BorrarBufferRX();
+    		    	    								        j=kAT_CGREG;
 
     		    	    								    break;
 
     		    	    								   case kAT_CGREG:
 
     		    	    								         printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								        j=kAT_CEREG;
+    		    	    								         BorrarBufferRX();
+    		    	    								       j=kAT_CEREG;
 
     		    	    								   break;
 
     		    	    								   case kAT_CEREG:
 
     		    	    								         printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								        j=kAT_CFUN_0;
+    		    	    								         BorrarBufferRX();
+    		    	    								       j=kAT_CFUN_0;
 
     		    	    								   break;
 
     		    	    								   case kAT_CFUN_0:
 
     		    	    								         printf("RESPUESTA ENCONTRADA\r\n");
-
+    		    	    								         BorrarBufferRX();
     		    	    								        j=kAT_CFUN_1;
 
     		    	    								   break;
@@ -309,50 +322,60 @@ const char *comandos_at[] = {
     		    	    								   case kAT_CFUN_1:
 
     		    	    								       	 printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								         j=kAT_CFUN_1;
+    		    	    								       	BorrarBufferRX();
+    		    	    								         j=kAT_CSQ;
 
     		    	    								    break;
 
     		    	    								   case kAT_CSQ:
 
     		    	    								       	printf("RESPUESTA ENCONTRADA\r\n");
-
-    		    	    								        j=kAT_CFUN_1;
+    		    	    								       	BorrarBufferRX();
+    		    	    								        j=kesperando_respuesta;
+    		    	    								        i=kesperando_respuesta;
 
     		    	    								   break;
-
-
 
     		    	    						   }
     		    	    						}
 
+    		    	    					}
+
+    		    	    						if(i==kesperando_respuesta){
+
+    		    	    						  for(int k=0; k<COMANDOS_DISPONIBLES_LEDS_SENSOR; k++){
+    		    	    						   puntero_ok2 = (char*) (strstr((char*) (&buffer_rx[0]),(char*) (repuestas_LEDS[k])));
+
     		    	    						   if(puntero_ok2!=0){
 
-    		    	    							  switch(i){
+    		    	    							  switch(k){
 
 
     		    	    						       	case kLED_VERDE_ON:
 
     		    	    						       		GPIO_PinWrite(GPIOD,5,0);
+    		    	    						       		BorrarBufferRX();
 
     		    	    						        break;
 
     		    	    						        case kLED_VERDE_OFF:
 
     		    	    						        	GPIO_PinWrite(GPIOD,5,1);
+    		    	    						        	BorrarBufferRX();
 
     		    	    						        break;
 
     		    	    						        case kLED_ROJO_ON:
 
     		    	    						        	GPIO_PinWrite(GPIOE,31U,0);
+    		    	    						        	BorrarBufferRX();
 
     		    	    						       	break;
 
     		    	    						        case kLED_ROJO_OFF:
 
     		    	    						        	GPIO_PinWrite(GPIOE,31U,1);
+    		    	    						        	BorrarBufferRX();
 
     		    	    						        break;
 
@@ -361,6 +384,7 @@ const char *comandos_at[] = {
     		    	    						    	   light_value=getLightADC();
     		    	    						    	   printf("Light (LUX): %d\r\n", light_value);
     		    	    						    	   printf("\r\n");
+    		    	    						    	   BorrarBufferRX();
 
     		    	    						       break;
 
@@ -369,6 +393,7 @@ const char *comandos_at[] = {
     		    	    						    	   temperature_value=getTemperatureValue();
     		    	    						    	   printf("Temperatura: %f\r\n", temperature_value);
     		    	    						    	   printf("\r\n");
+    		    	    						    	   BorrarBufferRX();
 
 
     		    	    						       break;
@@ -377,10 +402,11 @@ const char *comandos_at[] = {
 
     		    	    						     }
     		    	    						    }
-
     		    	    						}
+    		    	    					}
 
-    		    	    		BorrarBufferRX();
+
+
 
     		    	    		}
     		    	           }
@@ -414,6 +440,8 @@ const char *comandos_at[] = {
     		 }
 
     	}
+
+    //}
 
     }
     return 0 ;

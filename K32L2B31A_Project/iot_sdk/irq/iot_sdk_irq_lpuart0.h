@@ -15,7 +15,7 @@
 
 
 /*! @brief Ring buffer size (Unit: Byte). */
-#define RX_RING_BUFFER_SIZE 10
+#define RX_RING_BUFFER_SIZE 100
 
 
 void PushByteDesdeBuffer(uint8_t nuevo_byte);
