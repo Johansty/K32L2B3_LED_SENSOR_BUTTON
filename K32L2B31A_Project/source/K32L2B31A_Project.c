@@ -102,6 +102,8 @@ const char *comandos_at[] = {
        				"LED VERDE OFF",		//ATI
        				"LED ROJO ON",	//AT+CPIN?
        				"LED ROJO OFF",
+					"SENSOR_LUX",
+					"SENSOR_TEMP"
 
        };
 

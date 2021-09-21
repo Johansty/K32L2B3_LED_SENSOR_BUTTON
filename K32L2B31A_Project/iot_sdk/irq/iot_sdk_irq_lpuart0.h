@@ -1,3 +1,4 @@
+
 /*
  * iot_sdk_irq_lpuart0.h
  *
@@ -14,7 +15,7 @@
 
 
 /*! @brief Ring buffer size (Unit: Byte). */
-#define DEMO_RING_BUFFER_SIZE 100
+#define RX_RING_BUFFER_SIZE 10
 
 
 void PushByteDesdeBuffer(uint8_t nuevo_byte);
